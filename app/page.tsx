@@ -194,18 +194,18 @@ export default function Home() {
           >
             <div className="container mx-auto px-4 py-6 flex items-center justify-between">
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
-                  <ChefHat className="w-8 h-8" />
-                  <TextType
-                    text={["အကောင်းဆုံး စားသောက်ဆိုင် Menu"]}
-                    typingSpeed={75}
-                    pauseDuration={1500}
-                    showCursor
-                    cursorCharacter="_"
-                    variableSpeed={{ min: 40, max: 100 }}
-                  />
-                </h1>
-              </div>
+  <h1 className="text-xl md:text-3xl font-bold text-white tracking-tight flex flex-nowrap items-center gap-2 whitespace-nowrap">
+    <ChefHat className="w-6 h-6 md:w-8 md:h-8 flex-shrink-0" />
+    <TextType
+      text={["အကောင်းဆုံး စားသောက်ဆိုင် Menu"]}
+      typingSpeed={75}
+      pauseDuration={1500}
+      showCursor
+      cursorCharacter="_"
+      variableSpeed={{ min: 40, max: 100 }}
+    />
+  </h1>
+</div>
             </div>
           </motion.header>
 
