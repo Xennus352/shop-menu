@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, startTransition } from "react";
 import { colors } from "@/constant/themes";
 import {
   createCategory,
@@ -74,6 +74,11 @@ export default function AdminPanel() {
   const [message, setMessage] = useState({ text: "", isSuccess: true });
   const [activeTab, setActiveTab] = useState<"items" | "categories">("items");
 
+  const showMessage = (msg: string, isSuccess: boolean = true) => {
+    setMessage({ text: msg, isSuccess });
+    setTimeout(() => setMessage({ text: "", isSuccess: true }), 4000);
+  };
+
   const loadDashboardData = async () => {
     try {
       setLoading(true);
@@ -87,21 +92,19 @@ export default function AdminPanel() {
       if (fetchedCats && fetchedCats.length > 0 && !newItem.category_id) {
         setNewItem((prev) => ({ ...prev, category_id: fetchedCats[0].id }));
       }
-    } catch (err: any) {
-      showMessage(err.message || "Failed to sync database data", false);
+    } catch (err: unknown) {
+      showMessage(err instanceof Error ? err.message : "Failed to sync database data", false);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadDashboardData();
+    startTransition(() => {
+      loadDashboardData();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const showMessage = (msg: string, isSuccess: boolean = true) => {
-    setMessage({ text: msg, isSuccess });
-    setTimeout(() => setMessage({ text: "", isSuccess: true }), 4000);
-  };
 
   const handleAddImageSelect = (file: File | null) => {
     setAddImageFile(file);
@@ -233,7 +236,7 @@ export default function AdminPanel() {
       setAddImagePreview(null);
       if (addFileInputRef.current) addFileInputRef.current.value = "";
       loadDashboardData();
-    } catch (err: any) {
+    } catch {
       showMessage("An unexpected error occurred", false);
     } finally {
       setUploading(false);
@@ -289,7 +292,7 @@ export default function AdminPanel() {
       if (editFileInputRef.current) editFileInputRef.current.value = "";
       showMessage("Item updated successfully!");
       loadDashboardData();
-    } catch (err: any) {
+    } catch {
       showMessage("An unexpected error occurred", false);
     } finally {
       setUploading(false);
@@ -474,7 +477,7 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({
                         ...newItem,
-                        stock_status: e.target.value as any,
+                        stock_status: e.target.value as "instock" | "low" | "outofstock",
                       })
                     }
                     className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"
@@ -659,7 +662,7 @@ export default function AdminPanel() {
                       onChange={(e) =>
                         setEditingItem({
                           ...editingItem,
-                          stock_status: e.target.value as any,
+                          stock_status: e.target.value as "instock" | "low" | "outofstock",
                         })
                       }
                       className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"

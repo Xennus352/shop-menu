@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const ALLOWED_ADMINS = ["captain@gmail.com", "manager@yourshop.com"];
 
 export async function proxy(req: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: req.headers,
     },

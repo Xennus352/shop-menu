@@ -36,7 +36,7 @@ export default function AdminLogin() {
 
       router.push("/admin");
       router.refresh();
-    } catch (err) {
+    } catch {
       setError("System error occurred. Please try again.");
     } finally {
       setLoading(false);

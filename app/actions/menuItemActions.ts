@@ -35,7 +35,7 @@ export async function uploadMenuItemImage(
   const filePath = `items/${cleanFileName}`;
 
   // Upload the file buffer to the bucket
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from("menu-images")
     .upload(filePath, file, {
       cacheControl: "3600",

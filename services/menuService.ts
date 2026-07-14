@@ -3,7 +3,6 @@ import {
   MenuItem,
   Category,
   DailySpecial,
-  StockStatus,
 } from "@/types/menu";
 
 const STORAGE_KEY = "menu_data";

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, startTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChefHat,
-  Clock,
   Star,
   Sparkles,
   Crown,
@@ -111,7 +110,9 @@ export default function Home() {
   }, [items, selectedCategory]);
 
   useEffect(() => {
-    setVisibleCount(12);
+    startTransition(() => {
+      setVisibleCount(12);
+    });
   }, [selectedCategory]);
 
   useEffect(() => {
@@ -126,10 +127,6 @@ export default function Home() {
     if (observerTarget.current) observer.observe(observerTarget.current);
     return () => observer.disconnect();
   }, []);
-
-  const dailySpecialItem = items.find(
-    (item) => item.is_daily_special && item.is_available,
-  );
 
   const handleAnimationComplete = () => {
     setShowSplash(false);
@@ -280,292 +277,176 @@ export default function Home() {
                       layout
                       initial="hidden"
                       animate="visible"
-                      whileHover={{
-                        y: -8,
-                        scale: 1.02,
-                        transition: {
-                          type: "spring",
-                          stiffness: 300,
-                          damping: 20,
-                        },
-                      }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ y: -4 }}
                       onHoverStart={() => setHoveredItem(item.id)}
                       onHoverEnd={() => setHoveredItem(null)}
-                      className="group relative rounded-3xl overflow-hidden cursor-pointer"
+                      className="group relative overflow-hidden cursor-pointer"
                       style={{
-                        background: "rgba(255,255,255,0.4)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
-                        border: "1px solid rgba(255,255,255,0.6)",
+                        background: "#fff",
+                        borderRadius: 20,
                         boxShadow: isHovered
-                          ? "0 20px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(255,255,255,0.8) inset"
-                          : "0 8px 32px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.4) inset",
-                        transition: "box-shadow 0.3s ease",
+                          ? "0 12px 40px rgba(0,0,0,0.08)"
+                          : "0 2px 12px rgba(0,0,0,0.04)",
+                        transition: "box-shadow 0.3s ease, transform 0.3s ease",
                       }}
                     >
-                      {/* Glow effect on hover */}
-                      <motion.div
-                        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                        style={{
-                          background:
-                            "radial-gradient(circle at 50% 0%, rgba(232,180,160,0.15), transparent 70%)",
-                        }}
-                      />
-
-                      {/* Image section */}
-                      <div className="relative h-52 overflow-hidden">
-                        {item.foodUrl ? (
-                          <motion.img
-                            src={item.foodUrl}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
-                            whileHover={{ scale: 1.15 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                          />
-                        ) : (
-                          <div
-                            className="w-full h-full flex items-center justify-center"
-                            style={{
-                              background: `linear-gradient(135deg, ${colors.surface}, ${colors.bg})`,
-                            }}
-                          >
-                            <motion.div
-                              animate={{ rotate: [0, 10, -10, 0] }}
-                              transition={{
-                                duration: 2,
-                                repeat: Infinity,
-                                repeatDelay: 3,
+                      <div className="flex flex-col">
+                        {/* Image section - compact and elegant */}
+                        <div className="relative h-40 overflow-hidden" style={{ borderRadius: "20px 20px 0 0" }}>
+                          {item.foodUrl ? (
+                            <img
+                              src={item.foodUrl}
+                              alt={item.name}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div
+                              className="w-full h-full flex items-center justify-center"
+                              style={{
+                                background: `linear-gradient(135deg, ${colors.surface}, ${colors.bg})`,
                               }}
                             >
                               <Soup
-                                className="w-16 h-16"
-                                style={{ color: colors.muted }}
+                                className="w-12 h-12"
+                                style={{ color: colors.muted, opacity: 0.5 }}
                               />
-                            </motion.div>
-                          </div>
-                        )}
-
-                        {/* Enhanced gradient overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-                        {/* Shine effect on hover */}
-                        <motion.div
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-                          style={{
-                            background:
-                              "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)",
-                            transform: "translateX(-100%)",
-                          }}
-                          animate={isHovered ? { x: "200%" } : { x: "-100%" }}
-                          transition={{ duration: 1, ease: "easeInOut" }}
-                        />
-
-                        {/* Badges */}
-                        <div className="absolute top-4 left-4 flex flex-col gap-2">
-                          {item.is_daily_special && (
-                            <motion.div
-                              initial={{ x: -20, opacity: 0 }}
-                              animate={{ x: 0, opacity: 1 }}
-                              className="px-3 py-1.5 rounded-xl text-xs font-bold text-white flex items-center gap-1.5"
-                              style={{
-                                background:
-                                  "linear-gradient(135deg, #E8B4A0, #D4A89B)",
-                                boxShadow: "0 4px 12px rgba(232,180,160,0.4)",
-                              }}
-                            >
-                              <Sparkles className="w-3.5 h-3.5" />
-                              Today's Special
-                            </motion.div>
+                            </div>
                           )}
-                          <motion.div
-                            initial={{ x: -20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.1 }}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold ${stockConfig.color} backdrop-blur-sm`}
-                            style={{
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                            }}
-                          >
-                            {stockConfig.label}
-                          </motion.div>
-                        </div>
 
-                        {/* Price float with enhanced design */}
-                        <motion.div
-                          className="absolute bottom-4 right-4"
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <div
-                            className="px-4 py-2 rounded-2xl font-bold text-sm"
-                            style={{
-                              background: "rgba(255,255,255,0.7)",
-                              backdropFilter: "blur(12px)",
-                              WebkitBackdropFilter: "blur(12px)",
-                              color: colors.textDark,
-                              border: "1px solid rgba(255,255,255,0.6)",
-                              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                            }}
-                          >
-                            <span className="text-xs font-medium opacity-75">
-                              MMK
-                            </span>{" "}
-                            {item.price.toLocaleString()}
-                          </div>
-                        </motion.div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
-                        {/* Favorite button */}
-                        <motion.button
-                          className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"
-                          style={{
-                            background: "rgba(255,255,255,0.6)",
-                            backdropFilter: "blur(8px)",
-                            border: "1px solid rgba(255,255,255,0.4)",
-                          }}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <Heart
-                            className="w-4 h-4"
-                            style={{ color: colors.darkPeach }}
-                          />
-                        </motion.button>
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-5 relative">
-                        {/* Decorative line */}
-                        <div className="absolute top-0 left-5 right-5 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-
-                        <div className="flex items-start justify-between mt-1">
-                          <div className="min-w-0 flex-1">
-                            <h3
-                              className="font-bold text-lg tracking-tight"
-                              style={{ color: colors.textDark }}
-                            >
-                              {item.name}
-                            </h3>
-                            {item.name_en && (
-                              <p
-                                className="text-xs font-medium mt-1 opacity-60"
-                                style={{ color: colors.muted }}
-                              >
-                                {item.name_en}
-                              </p>
-                            )}
-                          </div>
-                          {item.is_daily_special && (
-                            <motion.div
-                              animate={{ rotate: [0, 10, -10, 0] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                            >
-                              <Crown
-                                className="w-6 h-6 flex-shrink-0"
-                                style={{ color: colors.darkPeach }}
-                              />
-                            </motion.div>
-                          )}
-                        </div>
-
-                        {/* Tags/Categories */}
-                        {item.tags && (
-                          <div className="flex gap-1.5 mt-3 flex-wrap">
-                            {item.tags.map((tag, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-0.5 rounded-lg text-xs font-medium"
+                          {/* Top badges row */}
+                          <div className="absolute top-3 left-3 flex gap-1.5">
+                            {item.is_daily_special && (
+                              <div
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold text-white flex items-center gap-1"
                                 style={{
-                                  background: "rgba(232,180,160,0.15)",
-                                  color: colors.darkPeach,
+                                  background: "linear-gradient(135deg, #E8B4A0, #D4A89B)",
+                                  boxShadow: "0 2px 8px rgba(232,180,160,0.3)",
                                 }}
                               >
-                                {tag}
-                              </span>
-                            ))}
+                                <Sparkles className="w-3 h-3" />
+                                Special
+                              </div>
+                            )}
+                            <div
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold ${stockConfig.color}`}
+                            >
+                              {stockConfig.label}
+                            </div>
                           </div>
-                        )}
 
-                        {/* Description with smooth animation */}
-                        <motion.div
-                          initial={false}
-                          animate={{
-                            height: isHovered ? "auto" : 0,
-                            opacity: isHovered ? 1 : 0,
-                          }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="overflow-hidden"
-                        >
+                          {/* Price */}
+                          <div className="absolute bottom-3 right-3">
+                            <div
+                              className="px-3 py-1.5 rounded-xl font-bold text-xs"
+                              style={{
+                                background: "rgba(255,255,255,0.9)",
+                                color: colors.textDark,
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                              }}
+                            >
+                              <span className="text-[10px] font-medium opacity-60">MMK </span>
+                              {item.price.toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <h3
+                                className="font-bold text-base tracking-tight leading-tight"
+                                style={{ color: colors.textDark }}
+                              >
+                                {item.name}
+                              </h3>
+                              {item.name_en && (
+                                <p
+                                  className="text-[11px] font-medium mt-0.5"
+                                  style={{ color: colors.muted, opacity: 0.6 }}
+                                >
+                                  {item.name_en}
+                                </p>
+                              )}
+                            </div>
+                            {item.is_daily_special && (
+                              <Crown
+                                className="w-4 h-4 flex-shrink-0"
+                                style={{ color: colors.darkPeach, opacity: 0.6 }}
+                              />
+                            )}
+                          </div>
+
+                          {/* Tags */}
+                          {item.tags && item.tags.length > 0 && (
+                            <div className="flex gap-1 mt-2.5 flex-wrap">
+                              {item.tags.map((tag, index) => (
+                                <span
+                                  key={index}
+                                  className="px-2 py-0.5 rounded-md text-[10px] font-medium"
+                                  style={{
+                                    background: `${colors.darkPeach}15`,
+                                    color: colors.darkPeach,
+                                  }}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Description - always visible, truncated */}
                           {item.description && (
                             <p
-                              className="text-sm mt-3 leading-relaxed opacity-80"
-                              style={{ color: colors.muted }}
+                              className="text-xs mt-2 leading-relaxed line-clamp-2"
+                              style={{ color: colors.muted, opacity: 0.7 }}
                             >
                               {item.description}
                             </p>
                           )}
-                        </motion.div>
 
-                        {/* Footer with enhanced design */}
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100/50">
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center">
+                          {/* Footer */}
+                          <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                            <div className="flex items-center gap-1.5">
                               <div className="flex">
                                 {[...Array(5)].map((_, i) => (
                                   <Star
                                     key={i}
-                                    className="w-4 h-4"
+                                    className="w-3 h-3"
                                     style={{
-                                      fill:
-                                        i < 4 ? colors.darkPeach : "#E5DDD5",
-                                      color:
-                                        i < 4 ? colors.darkPeach : "#E5DDD5",
-                                      filter:
-                                        i < 4
-                                          ? "drop-shadow(0 1px 2px rgba(0,0,0,0.1))"
-                                          : "none",
+                                      fill: i < 4 ? colors.darkPeach : "#E5DDD5",
+                                      color: i < 4 ? colors.darkPeach : "#E5DDD5",
                                     }}
                                   />
                                 ))}
                               </div>
                               <span
-                                className="text-sm ml-1.5 font-semibold"
+                                className="text-xs font-semibold ml-1"
                                 style={{ color: colors.textDark }}
                               >
                                 4.8
                               </span>
+                              <span className="text-[10px]" style={{ color: colors.muted, opacity: 0.5 }}>
+                                ({item.reviewCount || 24})
+                              </span>
                             </div>
-                            <span
-                              className="text-xs opacity-50"
-                              style={{ color: colors.muted }}
-                            >
-                              •
-                            </span>
-                            <span
-                              className="text-xs opacity-50"
-                              style={{ color: colors.muted }}
-                            >
-                              {item.reviewCount || 24} reviews
-                            </span>
-                          </div>
 
-                          {/* Add to cart button appears on hover */}
-                          {/* <motion.button
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{
-                              opacity: isHovered ? 1 : 0,
-                              scale: isHovered ? 1 : 0.8,
-                            }}
-                            className="px-3 py-1.5 rounded-xl text-xs font-bold text-white"
-                            style={{
-                              background:
-                                "linear-gradient(135deg, #E8B4A0, #D4A89B)",
-                              boxShadow: "0 4px 12px rgba(232,180,160,0.4)",
-                            }}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            + Add
-                          </motion.button> */}
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              className="w-7 h-7 rounded-full flex items-center justify-center"
+                              style={{
+                                background: `${colors.darkPeach}12`,
+                              }}
+                            >
+                              <Heart
+                                className="w-3.5 h-3.5"
+                                style={{ color: colors.darkPeach }}
+                              />
+                            </motion.button>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
