@@ -2,8 +2,9 @@
 
 import Lottie from "lottie-react";
 import animationData from "@/public/PrepareFood.json";
-import { Coffee, Soup, Utensils } from "lucide-react"; // Using your existing icons
+import { Coffee, Soup, Utensils } from "lucide-react";
 import TextType from "./TextType";
+import { colors } from "@/constant/themes";
 
 interface SplashScreenProps {
   onComplete?: () => void;
@@ -11,23 +12,34 @@ interface SplashScreenProps {
 
 export default function SplashScreen({ onComplete }: SplashScreenProps) {
   return (
-    // Background color set to your custom cream
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#FFEED6] overflow-hidden">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
+      style={{ background: colors.bg }}
+    >
       {/* Floating Decorative Elements */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-[10%] left-[10%] animate-bounce text-[#A5AF79] opacity-40">
+        <div
+          className="absolute top-[12%] left-[12%] animate-bounce opacity-30"
+          style={{ color: colors.sage }}
+        >
           <Soup size={48} />
         </div>
-        <div className="absolute bottom-[15%] right-[10%] animate-pulse text-[#E8A07C] opacity-40">
+        <div
+          className="absolute bottom-[18%] right-[12%] animate-pulse opacity-30"
+          style={{ color: colors.darkPeach }}
+        >
           <Coffee size={64} />
         </div>
-        <div className="absolute top-[20%] right-[15%] animate-spin-slow text-[#827148] opacity-30">
+        <div
+          className="absolute top-[22%] right-[18%] opacity-25"
+          style={{ color: colors.olive }}
+        >
           <Utensils size={40} />
         </div>
       </div>
 
-      {/* Responsive Lottie Container */}
-      <div className="w-full max-w-[300px] h-auto p-4">
+      {/* Lottie Container */}
+      <div className="w-full max-w-[280px] h-auto p-4">
         <Lottie
           animationData={animationData}
           loop={false}
@@ -35,7 +47,10 @@ export default function SplashScreen({ onComplete }: SplashScreenProps) {
         />
       </div>
 
-      <div className="absolute bottom-10 text-[#3E331E] text-lg font-bold tracking-widest opacity-60">
+      <div
+        className="absolute bottom-12 text-lg font-bold tracking-widest opacity-60"
+        style={{ color: colors.textDark }}
+      >
         <TextType
           text={["အကောင်းဆုံး စားသောက်ဆိုင်"]}
           typingSpeed={75}

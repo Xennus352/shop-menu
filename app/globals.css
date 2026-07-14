@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F3EFE9;
+  --foreground: #3C3228;
 }
 
 @theme inline {
@@ -10,13 +10,6 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -35,4 +28,43 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+/* Soft UI utilities */
+.neu-card {
+  background: linear-gradient(145deg, #FAF7F2, #EDE8E0);
+  box-shadow: 8px 8px 16px #D4CCC0, -8px -8px 16px #FFFFFF;
+  border: none;
+}
+
+.neu-pressed {
+  background: #F3EFE9;
+  box-shadow: inset 4px 4px 8px #D4CCC0, inset -4px -4px 8px #FFFFFF;
+}
+
+.neu-button {
+  background: linear-gradient(145deg, #FAF7F2, #EDE8E0);
+  box-shadow: 4px 4px 8px #D4CCC0, -4px -4px 8px #FFFFFF;
+  transition: all 0.2s ease;
+}
+
+.neu-button:hover {
+  box-shadow: 6px 6px 12px #D4CCC0, -6px -6px 12px #FFFFFF;
+}
+
+.neu-button:active {
+  background: #F3EFE9;
+  box-shadow: inset 4px 4px 8px #D4CCC0, inset -4px -4px 8px #FFFFFF;
+}
+
+.neu-input {
+  background: #F3EFE9;
+  box-shadow: inset 3px 3px 6px #D4CCC0, inset -3px -3px 6px #FFFFFF;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.neu-input:focus {
+  box-shadow: inset 4px 4px 8px #C8C0B4, inset -4px -4px 8px #FFFFFF;
+  outline: none;
 }

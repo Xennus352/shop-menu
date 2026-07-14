@@ -16,7 +16,6 @@ import {
   uploadMenuItemImage,
 } from "../actions/menuItemActions";
 
-// Matching your real Database Schema shapes
 interface DbCategory {
   id: string;
   name: string;
@@ -40,7 +39,6 @@ interface DbMenuItem {
 }
 
 export default function AdminPanel() {
-  // Real DB States
   const [items, setItems] = useState<DbMenuItem[]>([]);
   const [categories, setCategories] = useState<DbCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +46,6 @@ export default function AdminPanel() {
 
   const [editingItem, setEditingItem] = useState<DbMenuItem | null>(null);
 
-  // Image upload states with preview
   const [addImageFile, setAddImageFile] = useState<File | null>(null);
   const [addImagePreview, setAddImagePreview] = useState<string | null>(null);
   const [editImageFile, setEditImageFile] = useState<File | null>(null);
@@ -57,7 +54,6 @@ export default function AdminPanel() {
   const addFileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Forms local states
   const [newItem, setNewItem] = useState({
     name: "",
     name_en: "",
@@ -78,7 +74,6 @@ export default function AdminPanel() {
   const [message, setMessage] = useState({ text: "", isSuccess: true });
   const [activeTab, setActiveTab] = useState<"items" | "categories">("items");
 
-  // Fetch initial data from DB
   const loadDashboardData = async () => {
     try {
       setLoading(true);
@@ -108,7 +103,6 @@ export default function AdminPanel() {
     setTimeout(() => setMessage({ text: "", isSuccess: true }), 4000);
   };
 
-  // Handle image file selection with preview
   const handleAddImageSelect = (file: File | null) => {
     setAddImageFile(file);
     if (file) {
@@ -135,7 +129,6 @@ export default function AdminPanel() {
     }
   };
 
-  // Category DB Actions
   const handleAddCategory = async () => {
     if (!newCategory.name.trim()) {
       showMessage("Please enter a category name", false);
@@ -176,7 +169,6 @@ export default function AdminPanel() {
     loadDashboardData();
   };
 
-  // Menu Item DB Actions
   const handleAddItem = async () => {
     const calculatedPrice = Number(newItem.price);
     if (
@@ -196,7 +188,6 @@ export default function AdminPanel() {
       setUploading(true);
       let foodUrl: string | null = null;
 
-      // Handle Storage upload if a file was selected
       if (addImageFile) {
         const formData = new FormData();
         formData.append("file", addImageFile);
@@ -260,7 +251,6 @@ export default function AdminPanel() {
       setUploading(true);
       let foodUrl: string | null = editingItem.foodUrl;
 
-      // Handle Storage upload if a new replacement image file was specified
       if (editImageFile) {
         const formData = new FormData();
         formData.append("file", editImageFile);
@@ -329,49 +319,50 @@ export default function AdminPanel() {
   };
 
   return (
-    <div style={{ backgroundColor: colors.cream, minHeight: "100vh" }}>
+    <div style={{ backgroundColor: colors.bg, minHeight: "100vh" }}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10">
         {/* Toast Notification */}
         {message.text && (
           <div
-            className={`fixed top-4 right-4 z-50 px-4 py-3 rounded shadow-lg text-sm transition-all max-w-[90vw] sm:max-w-sm ${
-              message.isSuccess ? "bg-green-600" : "bg-red-600"
-            }`}
-            style={{ color: colors.textLight }}
+            className="fixed top-4 right-4 z-50 px-5 py-3 rounded-xl text-sm transition-all max-w-[90vw] sm:max-w-sm neu-card flex items-center gap-2"
+            style={{ color: message.isSuccess ? "#2D6A4F" : "#9B1D1D" }}
           >
+            <span
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{
+                backgroundColor: message.isSuccess ? "#2D6A4F" : "#9B1D1D",
+              }}
+            />
             {message.text}
           </div>
         )}
 
         {/* Header */}
-        <div
-          className="border-b pb-4 sm:pb-6 mb-4 sm:mb-6"
-          style={{ borderColor: colors.olive }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1
-                className="text-xl sm:text-2xl lg:text-3xl font-light"
+                className="text-2xl sm:text-3xl font-bold tracking-tight"
                 style={{ color: colors.textDark }}
               >
                 Admin Dashboard
               </h1>
-              <p
-                className="text-xs sm:text-sm mt-1"
-                style={{ color: colors.olive }}
-              >
+              <p className="text-sm mt-1" style={{ color: colors.muted }}>
                 Live Database Connected Menu Manager
               </p>
             </div>
             <div
-              className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm"
-              style={{ color: colors.olive }}
+              className="flex flex-wrap items-center gap-3 text-sm"
+              style={{ color: colors.muted }}
             >
-              <span>{categories.length} categories</span>
-              <span className="hidden xs:inline">•</span>
-              <span>{items.length} items</span>
+              <span className="font-medium">{categories.length} categories</span>
+              <span className="w-1 h-1 rounded-full" style={{ backgroundColor: colors.muted }} />
+              <span className="font-medium">{items.length} items</span>
               {(loading || uploading) && (
-                <span className="animate-pulse text-xs text-amber-700 font-bold ml-1 sm:ml-2">
+                <span
+                  className="text-xs font-bold ml-1 animate-pulse"
+                  style={{ color: colors.darkPeach }}
+                >
                   {uploading ? "Uploading Image..." : "Syncing..."}
                 </span>
               )}
@@ -380,51 +371,44 @@ export default function AdminPanel() {
         </div>
 
         {/* Tab Navigation */}
-        <div
-          className="border-b mb-4 sm:mb-6 overflow-x-auto"
-          style={{ borderColor: colors.olive }}
-        >
-          <nav className="flex gap-4 sm:gap-6 min-w-max">
-            {(["items", "categories"] as const).map((tab) => {
-              const labels = { items: "Menu Items", categories: "Categories" };
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-2 sm:py-3 px-1 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab
-                      ? "border-b-2"
-                      : "border-transparent hover:border-opacity-50"
-                  }`}
-                  style={{
-                    color: activeTab === tab ? colors.textDark : colors.olive,
-                    borderColor:
-                      activeTab === tab ? colors.textDark : "transparent",
-                  }}
-                >
-                  {labels[tab]}
-                </button>
-              );
-            })}
-          </nav>
+        <div className="flex gap-2 mb-8 p-1 rounded-xl" style={{ background: colors.bg, boxShadow: "inset 2px 2px 4px #D4CCC0, inset -2px -2px 4px #FFFFFF" }}>
+          {(["items", "categories"] as const).map((tab) => {
+            const labels = { items: "Menu Items", categories: "Categories" };
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex-1 sm:flex-none ${
+                  isActive ? "" : ""
+                }`}
+                style={{
+                  color: isActive ? "white" : colors.textDark,
+                  background: isActive ? colors.olive : "transparent",
+                  boxShadow: isActive
+                    ? `0 2px 8px ${colors.olive}40`
+                    : "none",
+                }}
+              >
+                {labels[tab]}
+              </button>
+            );
+          })}
         </div>
 
         {/* Content Tabs */}
         <div className="py-1 sm:py-2">
           {activeTab === "items" && (
-            <div className="space-y-6 sm:space-y-8">
+            <div className="space-y-8">
               {/* Add Item Form */}
-              <div
-                className="bg-white p-3 sm:p-4 rounded border"
-                style={{ borderColor: colors.sage }}
-              >
+              <div className="p-5 sm:p-6 rounded-2xl neu-card">
                 <h3
-                  className="text-sm font-medium mb-3 sm:mb-4"
-                  style={{ color: colors.textDark }}
+                  className="text-sm font-bold mb-5 tracking-wide uppercase"
+                  style={{ color: colors.muted }}
                 >
                   Add New Item
                 </h3>
-                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   <input
                     type="text"
                     placeholder="Name (Myanmar)"
@@ -432,8 +416,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({ ...newItem, name: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
                   <input
                     type="text"
@@ -442,8 +426,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({ ...newItem, name_en: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
                   <input
                     type="number"
@@ -452,8 +436,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({ ...newItem, price: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
 
                   <select
@@ -461,8 +445,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({ ...newItem, category_id: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"
+                    style={{ color: colors.textDark }}
                   >
                     {categories.length === 0 && (
                       <option value="">-- Create a Category First --</option>
@@ -481,8 +465,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewItem({ ...newItem, description: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
 
                   <select
@@ -493,17 +477,17 @@ export default function AdminPanel() {
                         stock_status: e.target.value as any,
                       })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"
+                    style={{ color: colors.textDark }}
                   >
                     <option value="instock">In Stock (ပစ္စည်းရှိ)</option>
                     <option value="low">Low Stock (နည်းနေသည်)</option>
                     <option value="outofstock">Out Of Stock (ပြတ်နေသည်)</option>
                   </select>
 
-                  {/* Image Upload with Preview */}
+                  {/* Image Upload */}
                   <div className="xs:col-span-2 lg:col-span-3">
-                    <label className="text-xs font-medium text-gray-500 block mb-1">
+                    <label className="text-xs font-medium block mb-2" style={{ color: colors.muted }}>
                       Food Item Image (ဓါတ်ပုံ)
                     </label>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -514,14 +498,15 @@ export default function AdminPanel() {
                         onChange={(e) =>
                           handleAddImageSelect(e.target.files?.[0] || null)
                         }
-                        className="text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 w-full sm:w-auto"
+                        className="text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white file:text-gray-700 hover:file:bg-gray-50 w-full sm:w-auto neu-button"
+                        style={{ color: colors.textDark }}
                       />
                       {addImagePreview && (
                         <div className="flex items-center gap-2">
                           <img
                             src={addImagePreview}
                             alt="Preview"
-                            className="w-16 h-16 object-cover rounded border border-gray-200"
+                            className="w-14 h-14 object-cover rounded-xl neu-card"
                           />
                           <button
                             onClick={() => {
@@ -530,7 +515,8 @@ export default function AdminPanel() {
                               if (addFileInputRef.current)
                                 addFileInputRef.current.value = "";
                             }}
-                            className="text-xs text-red-600 hover:text-red-800"
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                            style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                           >
                             Remove
                           </button>
@@ -539,9 +525,9 @@ export default function AdminPanel() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 px-1 col-span-1 xs:col-span-2 lg:col-span-3 py-1">
+                  <div className="flex flex-wrap items-center gap-6 col-span-1 xs:col-span-2 lg:col-span-3 pt-1">
                     <label
-                      className="flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+                      className="flex items-center gap-2.5 text-sm cursor-pointer select-none"
                       style={{ color: colors.textDark }}
                     >
                       <input
@@ -553,11 +539,13 @@ export default function AdminPanel() {
                             is_available: e.target.checked,
                           })
                         }
+                        className="w-4 h-4 rounded"
+                        style={{ accentColor: colors.olive }}
                       />
                       Available on Menu (ပြသမည်)
                     </label>
                     <label
-                      className="flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+                      className="flex items-center gap-2.5 text-sm cursor-pointer select-none"
                       style={{ color: colors.textDark }}
                     >
                       <input
@@ -569,6 +557,8 @@ export default function AdminPanel() {
                             is_daily_special: e.target.checked,
                           })
                         }
+                        className="w-4 h-4 rounded"
+                        style={{ accentColor: colors.olive }}
                       />
                       Daily Special (ယနေ့အထူး)
                     </label>
@@ -577,10 +567,11 @@ export default function AdminPanel() {
                 <button
                   onClick={handleAddItem}
                   disabled={uploading}
-                  className="mt-3 px-4 py-2 text-sm font-medium rounded transition-colors disabled:opacity-50 w-full sm:w-auto"
+                  className="mt-5 px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 disabled:opacity-50 w-full sm:w-auto"
                   style={{
-                    backgroundColor: colors.sage,
-                    color: colors.textLight,
+                    background: `linear-gradient(135deg, ${colors.sage}, ${colors.olive})`,
+                    color: "white",
+                    boxShadow: `0 4px 12px ${colors.olive}40`,
                   }}
                 >
                   {uploading ? "Saving data..." : "Add to Menu List"}
@@ -589,28 +580,22 @@ export default function AdminPanel() {
 
               {/* Edit Item Form */}
               {editingItem && (
-                <div
-                  className="bg-amber-50/50 p-3 sm:p-4 rounded border-2 border-dashed"
-                  style={{ borderColor: colors.olive }}
-                >
+                <div className="p-5 sm:p-6 rounded-2xl neu-card border-2 border-dashed" style={{ borderColor: `${colors.olive}40` }}>
                   <h3
-                    className="text-sm font-medium mb-3 sm:mb-4"
-                    style={{ color: colors.textDark }}
+                    className="text-sm font-bold mb-5 tracking-wide uppercase"
+                    style={{ color: colors.muted }}
                   >
                     Edit Item Properties
                   </h3>
-                  <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <input
                       type="text"
                       value={editingItem.name}
                       onChange={(e) =>
                         setEditingItem({ ...editingItem, name: e.target.value })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                      style={{ color: colors.textDark }}
                     />
                     <input
                       type="text"
@@ -622,11 +607,8 @@ export default function AdminPanel() {
                           name_en: e.target.value,
                         })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                      style={{ color: colors.textDark }}
                     />
                     <input
                       type="number"
@@ -637,11 +619,8 @@ export default function AdminPanel() {
                           price: Number(e.target.value),
                         })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                      style={{ color: colors.textDark }}
                     />
 
                     <select
@@ -652,11 +631,8 @@ export default function AdminPanel() {
                           category_id: e.target.value,
                         })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"
+                      style={{ color: colors.textDark }}
                     >
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
@@ -674,11 +650,8 @@ export default function AdminPanel() {
                           description: e.target.value,
                         })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                      style={{ color: colors.textDark }}
                     />
 
                     <select
@@ -689,20 +662,17 @@ export default function AdminPanel() {
                           stock_status: e.target.value as any,
                         })
                       }
-                      className="px-3 py-2 border rounded text-sm w-full"
-                      style={{
-                        borderColor: colors.sage,
-                        color: colors.textDark,
-                      }}
+                      className="neu-input px-4 py-2.5 rounded-xl text-sm w-full appearance-none"
+                      style={{ color: colors.textDark }}
                     >
                       <option value="instock">In Stock</option>
                       <option value="low">Low Stock</option>
                       <option value="outofstock">Out Of Stock</option>
                     </select>
 
-                    {/* Edit Image Upload with Preview */}
+                    {/* Edit Image Upload */}
                     <div className="xs:col-span-2 lg:col-span-3">
-                      <label className="text-xs font-medium text-gray-500 block mb-1">
+                      <label className="text-xs font-medium block mb-2" style={{ color: colors.muted }}>
                         Replace Food Image (ဓါတ်ပုံအသစ်လဲရန်) - Optional
                       </label>
                       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -711,14 +681,15 @@ export default function AdminPanel() {
                             <img
                               src={editingItem.foodUrl}
                               alt="Current layout preview"
-                              className="w-12 h-12 object-cover rounded border"
+                              className="w-12 h-12 object-cover rounded-xl neu-card"
                             />
                           )}
                           {editImagePreview && (
                             <img
                               src={editImagePreview}
                               alt="New preview"
-                              className="w-12 h-12 object-cover rounded border border-green-500"
+                              className="w-12 h-12 object-cover rounded-xl neu-card"
+                              style={{ boxShadow: `0 0 0 2px ${colors.sage}` }}
                             />
                           )}
                           <input
@@ -728,7 +699,8 @@ export default function AdminPanel() {
                             onChange={(e) =>
                               handleEditImageSelect(e.target.files?.[0] || null)
                             }
-                            className="text-sm file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 w-full sm:w-auto"
+                            className="text-sm file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-white file:text-gray-700 hover:file:bg-gray-50 w-full sm:w-auto neu-button"
+                            style={{ color: colors.textDark }}
                           />
                         </div>
                         {editImagePreview && (
@@ -739,7 +711,8 @@ export default function AdminPanel() {
                               if (editFileInputRef.current)
                                 editFileInputRef.current.value = "";
                             }}
-                            className="text-xs text-red-600 hover:text-red-800"
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                            style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                           >
                             Remove New Image
                           </button>
@@ -747,9 +720,9 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 sm:gap-6 col-span-1 xs:col-span-2 lg:col-span-3 py-1">
+                    <div className="flex flex-wrap items-center gap-6 col-span-1 xs:col-span-2 lg:col-span-3 pt-1">
                       <label
-                        className="flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+                        className="flex items-center gap-2.5 text-sm cursor-pointer select-none"
                         style={{ color: colors.textDark }}
                       >
                         <input
@@ -761,11 +734,13 @@ export default function AdminPanel() {
                               is_available: e.target.checked,
                             })
                           }
+                          className="w-4 h-4 rounded"
+                          style={{ accentColor: colors.olive }}
                         />
                         Available
                       </label>
                       <label
-                        className="flex items-center gap-2 text-xs sm:text-sm cursor-pointer"
+                        className="flex items-center gap-2.5 text-sm cursor-pointer select-none"
                         style={{ color: colors.textDark }}
                       >
                         <input
@@ -777,23 +752,25 @@ export default function AdminPanel() {
                               is_daily_special: e.target.checked,
                             })
                           }
+                          className="w-4 h-4 rounded"
+                          style={{ accentColor: colors.olive }}
                         />
                         Daily Special (ယနေ့အထူး)
                       </label>
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2 sm:gap-3 mt-3 sm:mt-4">
+                  <div className="flex flex-wrap gap-3 mt-5">
                     <button
                       onClick={handleUpdateItem}
                       disabled={uploading}
-                      className="px-4 py-2 text-sm font-medium rounded text-white disabled:opacity-50 w-full sm:w-auto"
+                      className="px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 disabled:opacity-50"
                       style={{
-                        backgroundColor: colors.sage,
+                        background: `linear-gradient(135deg, ${colors.sage}, ${colors.olive})`,
+                        color: "white",
+                        boxShadow: `0 4px 12px ${colors.olive}40`,
                       }}
                     >
-                      {uploading
-                        ? "Uploading image..."
-                        : "Save Menu List Record"}
+                      {uploading ? "Uploading image..." : "Save Menu List Record"}
                     </button>
                     <button
                       onClick={() => {
@@ -801,7 +778,8 @@ export default function AdminPanel() {
                         setEditImageFile(null);
                         setEditImagePreview(null);
                       }}
-                      className="px-4 py-2 text-sm text-black font-medium rounded bg-white border border-red-300 w-full sm:w-auto"
+                      className="px-6 py-2.5 text-sm font-medium rounded-xl neu-button"
+                      style={{ color: colors.textDark }}
                     >
                       Cancel
                     </button>
@@ -809,105 +787,87 @@ export default function AdminPanel() {
                 </div>
               )}
 
-              {/* Items Table Grid - Responsive */}
-              <div
-                className="border rounded overflow-hidden"
-                style={{ borderColor: colors.sage }}
-              >
+              {/* Items Table */}
+              <div className="rounded-2xl neu-card overflow-hidden">
                 {/* Mobile Card View */}
-                <div
-                  className="sm:hidden divide-y"
-                  style={{ borderColor: colors.sage }}
-                >
+                <div className="sm:hidden divide-y" style={{ borderColor: `${colors.muted}20` }}>
                   {items.map((item) => (
-                    <div key={item.id} className="p-4 bg-white">
+                    <div key={item.id} className="p-4" style={{ background: colors.surface }}>
                       <div className="flex items-start gap-3">
                         <button
                           onClick={() => handleToggleAvailability(item.id)}
-                          className="text-xs font-semibold px-2 py-1 rounded shadow-sm flex-shrink-0"
+                          className="text-xs font-semibold px-3 py-1.5 rounded-lg neu-button flex-shrink-0"
                           style={{
-                            backgroundColor: item.is_available
-                              ? colors.sage
-                              : colors.darkPeach,
-                            color: colors.textLight,
+                            color: item.is_available ? "#2D6A4F" : "#9B1D1D",
+                            background: item.is_available ? "#ECFDF5" : "#FEF2F2",
+                            boxShadow: "none",
                           }}
                         >
-                          {item.is_available ? "✅ ရှိ" : "❌ မရှိ"}
+                          {item.is_available ? "ရှိ" : "မရှိ"}
                         </button>
                         {item.foodUrl ? (
                           <img
                             src={item.foodUrl}
                             alt={item.name}
-                            className="w-12 h-12 object-cover rounded border flex-shrink-0"
+                            className="w-11 h-11 object-cover rounded-xl flex-shrink-0"
+                            style={{ boxShadow: "2px 2px 4px #D4CCC0" }}
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded border bg-gray-100 flex items-center justify-center text-gray-400 text-[10px] flex-shrink-0">
-                            No Image
+                          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[10px] flex-shrink-0" style={{ background: colors.bg, color: colors.muted }}>
+                            No Img
                           </div>
                         )}
                         <div className="flex-1 min-w-0">
-                          <div
-                            className="font-medium text-sm truncate"
-                            style={{ color: colors.textDark }}
-                          >
+                          <div className="font-medium text-sm" style={{ color: colors.textDark }}>
                             {item.name}
                           </div>
                           {item.name_en && (
-                            <div className="text-xs text-gray-400 truncate">
+                            <div className="text-xs" style={{ color: colors.muted }}>
                               {item.name_en}
                             </div>
                           )}
-                          <div className="flex flex-wrap items-center gap-1 mt-1">
-                            <span
-                              className="text-xs font-medium"
-                              style={{ color: colors.textDark }}
-                            >
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <span className="text-xs font-semibold" style={{ color: colors.textDark }}>
                               {item.price} MMK
                             </span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-600">
+                            <span className="text-xs" style={{ color: colors.muted }}>•</span>
+                            <span className="text-xs" style={{ color: colors.muted }}>
                               {categories.find(
                                 (cat) => cat.id === item.category_id,
                               )?.name || "—"}
                             </span>
                           </div>
-                          <div className="flex flex-wrap gap-1 mt-1">
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
                             <span
-                              className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${
+                              className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg ${
                                 item.stock_status === "instock"
-                                  ? "bg-green-100 text-green-800"
+                                  ? "bg-emerald-50 text-emerald-700"
                                   : item.stock_status === "low"
-                                    ? "bg-amber-100 text-amber-800"
-                                    : "bg-red-100 text-red-800"
+                                    ? "bg-amber-50 text-amber-700"
+                                    : "bg-rose-50 text-rose-700"
                               }`}
                             >
                               {item.stock_status}
                             </span>
                             {item.is_daily_special && (
-                              <span className="text-[10px] font-medium bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg" style={{ background: `${colors.darkPeach}20`, color: colors.darkPeach }}>
                                 ✨ ယနေ့အထူး
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-col gap-1 flex-shrink-0">
+                        <div className="flex flex-col gap-1.5 flex-shrink-0">
                           <button
                             onClick={() => setEditingItem(item)}
-                            className="text-xs font-medium px-2 py-1 rounded"
-                            style={{
-                              color: colors.olive,
-                              backgroundColor: colors.cream,
-                            }}
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg neu-button"
+                            style={{ color: colors.olive }}
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteItem(item.id, item.name)}
-                            className="text-xs font-medium px-2 py-1 rounded"
-                            style={{
-                              color: colors.darkPeach,
-                              backgroundColor: colors.cream,
-                            }}
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                            style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                           >
                             Delete
                           </button>
@@ -920,52 +880,38 @@ export default function AdminPanel() {
                 {/* Desktop Table View */}
                 <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead style={{ backgroundColor: colors.sage }}>
+                    <thead>
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Status
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Image
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Item
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Category
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Price
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Stock / Tags
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
-                          Actions
-                        </th>
+                        {["Status", "Image", "Item", "Category", "Price", "Stock / Tags", "Actions"].map(
+                          (heading) => (
+                            <th
+                              key={heading}
+                              className="px-4 py-3.5 text-left text-xs font-bold uppercase tracking-wider"
+                              style={{ color: colors.muted, background: colors.surface }}
+                            >
+                              {heading}
+                            </th>
+                          ),
+                        )}
                       </tr>
                     </thead>
-                    <tbody
-                      className="divide-y bg-white"
-                      style={{ borderColor: colors.sage }}
-                    >
+                    <tbody className="divide-y" style={{ borderColor: `${colors.muted}15` }}>
                       {items.map((item) => (
                         <tr
                           key={item.id}
-                          className="hover:bg-slate-50 transition-colors"
+                          className="transition-colors"
+                          style={{ background: colors.surface }}
                         >
                           <td className="px-4 py-3">
                             <button
                               onClick={() => handleToggleAvailability(item.id)}
-                              className="text-xs font-semibold px-2.5 py-1 rounded shadow-sm"
+                              className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                               style={{
-                                backgroundColor: item.is_available
-                                  ? colors.sage
-                                  : colors.darkPeach,
-                                color: colors.textLight,
+                                color: item.is_available ? "#2D6A4F" : "#9B1D1D",
+                                background: item.is_available ? "#ECFDF5" : "#FEF2F2",
                               }}
                             >
-                              {item.is_available ? "✅ ရှိ" : "❌ မရှိ"}
+                              {item.is_available ? "ရှိ" : "မရှိ"}
                             </button>
                           </td>
                           <td className="px-4 py-3">
@@ -973,64 +919,56 @@ export default function AdminPanel() {
                               <img
                                 src={item.foodUrl}
                                 alt={item.name}
-                                className="w-12 h-12 object-cover rounded border bg-gray-50"
+                                className="w-11 h-11 object-cover rounded-xl"
+                                style={{ boxShadow: "2px 2px 4px #D4CCC0" }}
                               />
                             ) : (
-                              <div className="w-12 h-12 rounded border bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
-                                No Image
+                              <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[10px]" style={{ background: colors.bg, color: colors.muted }}>
+                                No Img
                               </div>
                             )}
                           </td>
                           <td className="px-4 py-3">
-                            <div
-                              className="font-medium"
-                              style={{ color: colors.textDark }}
-                            >
+                            <div className="font-medium" style={{ color: colors.textDark }}>
                               {item.name}
                             </div>
                             {item.name_en && (
-                              <div className="text-xs text-gray-400 font-mono">
+                              <div className="text-xs" style={{ color: colors.muted }}>
                                 {item.name_en}
                               </div>
                             )}
                           </td>
-                          <td
-                            className="px-4 py-3 text-xs font-medium"
-                            style={{ color: colors.textDark }}
-                          >
+                          <td className="px-4 py-3 text-xs font-medium" style={{ color: colors.textDark }}>
                             {categories.find(
                               (cat) => cat.id === item.category_id,
                             )?.name || "—"}
                           </td>
-                          <td
-                            className="px-4 py-3 font-medium"
-                            style={{ color: colors.textDark }}
-                          >
+                          <td className="px-4 py-3 font-semibold" style={{ color: colors.textDark }}>
                             {item.price} MMK
                           </td>
                           <td className="px-4 py-3 space-y-1">
                             <span
-                              className={`text-[11px] uppercase tracking-wider font-bold px-2 py-0.5 rounded block w-max ${
+                              className={`text-[11px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-lg block w-max ${
                                 item.stock_status === "instock"
-                                  ? "bg-green-100 text-green-800"
+                                  ? "bg-emerald-50 text-emerald-700"
                                   : item.stock_status === "low"
-                                    ? "bg-amber-100 text-amber-800"
-                                    : "bg-red-100 text-red-800"
+                                    ? "bg-amber-50 text-amber-700"
+                                    : "bg-rose-50 text-rose-700"
                               }`}
                             >
                               {item.stock_status}
                             </span>
                             {item.is_daily_special && (
-                              <span className="text-[10px] font-medium bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded block w-max">
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-lg block w-max" style={{ background: `${colors.darkPeach}20`, color: colors.darkPeach }}>
                                 ✨ ယနေ့အထူး
                               </span>
                             )}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <div className="flex items-center justify-center gap-3">
+                            <div className="flex items-center justify-center gap-2">
                               <button
                                 onClick={() => setEditingItem(item)}
-                                className="text-sm font-medium"
+                                className="text-xs font-medium px-3 py-1.5 rounded-lg neu-button"
                                 style={{ color: colors.olive }}
                               >
                                 Edit
@@ -1039,8 +977,8 @@ export default function AdminPanel() {
                                 onClick={() =>
                                   handleDeleteItem(item.id, item.name)
                                 }
-                                className="text-sm font-medium"
-                                style={{ color: colors.darkPeach }}
+                                className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                                style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                               >
                                 Delete
                               </button>
@@ -1057,17 +995,14 @@ export default function AdminPanel() {
 
           {activeTab === "categories" && (
             <div className="space-y-6">
-              <div
-                className="bg-white p-3 sm:p-4 rounded border"
-                style={{ borderColor: colors.sage }}
-              >
+              <div className="p-5 sm:p-6 rounded-2xl neu-card">
                 <h3
-                  className="text-sm font-medium mb-3 sm:mb-4"
-                  style={{ color: colors.textDark }}
+                  className="text-sm font-bold mb-5 tracking-wide uppercase"
+                  style={{ color: colors.muted }}
                 >
                   Create New Category
                 </h3>
-                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 max-w-2xl">
+                <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
                   <input
                     type="text"
                     placeholder="Name (Myanmar)"
@@ -1075,8 +1010,8 @@ export default function AdminPanel() {
                     onChange={(e) =>
                       setNewCategory({ ...newCategory, name: e.target.value })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
                   <input
                     type="text"
@@ -1088,8 +1023,8 @@ export default function AdminPanel() {
                         name_en: e.target.value,
                       })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
                   <input
                     type="number"
@@ -1101,55 +1036,47 @@ export default function AdminPanel() {
                         display_order: e.target.value,
                       })
                     }
-                    className="px-3 py-2 border rounded text-sm w-full"
-                    style={{ borderColor: colors.sage, color: colors.textDark }}
+                    className="neu-input px-4 py-2.5 rounded-xl text-sm w-full"
+                    style={{ color: colors.textDark }}
                   />
                 </div>
                 <button
                   onClick={handleAddCategory}
-                  className="mt-3 px-4 py-2 text-sm font-medium rounded text-white w-full sm:w-auto"
-                  style={{ backgroundColor: colors.sage }}
+                  className="mt-4 px-6 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.sage}, ${colors.olive})`,
+                    color: "white",
+                    boxShadow: `0 4px 12px ${colors.olive}40`,
+                  }}
                 >
                   Save Category
                 </button>
               </div>
 
-              {/* Categories Table - Responsive */}
-              <div
-                className="border rounded overflow-hidden max-w-2xl"
-                style={{ borderColor: colors.sage }}
-              >
+              {/* Categories Table */}
+              <div className="rounded-2xl neu-card overflow-hidden max-w-2xl">
                 {/* Mobile Card View */}
-                <div
-                  className="sm:hidden divide-y"
-                  style={{ borderColor: colors.sage }}
-                >
+                <div className="sm:hidden divide-y" style={{ borderColor: `${colors.muted}20` }}>
                   {categories.map((cat) => (
-                    <div key={cat.id} className="p-4 bg-white">
+                    <div key={cat.id} className="p-4" style={{ background: colors.surface }}>
                       <div className="flex justify-between items-start">
                         <div>
-                          <div
-                            className="font-medium text-sm"
-                            style={{ color: colors.textDark }}
-                          >
+                          <div className="font-medium text-sm" style={{ color: colors.textDark }}>
                             {cat.name}
                           </div>
                           {cat.name_en && (
-                            <div className="text-xs text-gray-500 font-mono">
+                            <div className="text-xs" style={{ color: colors.muted }}>
                               {cat.name_en}
                             </div>
                           )}
-                          <div className="text-xs text-gray-400 mt-1">
+                          <div className="text-xs mt-1" style={{ color: colors.muted }}>
                             Order: {cat.display_order}
                           </div>
                         </div>
                         <button
                           onClick={() => handleDeleteCategory(cat.id)}
-                          className="text-sm font-medium px-3 py-1 rounded"
-                          style={{
-                            color: colors.darkPeach,
-                            backgroundColor: colors.cream,
-                          }}
+                          className="text-xs font-medium px-3 py-1.5 rounded-lg"
+                          style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                         >
                           Remove
                         </button>
@@ -1161,45 +1088,38 @@ export default function AdminPanel() {
                 {/* Desktop Table View */}
                 <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead style={{ backgroundColor: colors.sage }}>
+                    <thead>
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          Myanmar Name
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-white">
-                          English Name
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
-                          Order
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-white">
-                          Actions
-                        </th>
+                        {["Myanmar Name", "English Name", "Order", "Actions"].map(
+                          (heading) => (
+                            <th
+                              key={heading}
+                              className="px-4 py-3.5 text-left text-xs font-bold uppercase tracking-wider"
+                              style={{ color: colors.muted, background: colors.surface }}
+                            >
+                              {heading}
+                            </th>
+                          ),
+                        )}
                       </tr>
                     </thead>
-                    <tbody
-                      className="divide-y bg-white"
-                      style={{ borderColor: colors.sage }}
-                    >
+                    <tbody className="divide-y" style={{ borderColor: `${colors.muted}15` }}>
                       {categories.map((cat) => (
-                        <tr key={cat.id}>
-                          <td
-                            className="px-4 py-3 font-medium"
-                            style={{ color: colors.textDark }}
-                          >
+                        <tr key={cat.id} style={{ background: colors.surface }}>
+                          <td className="px-4 py-3 font-medium" style={{ color: colors.textDark }}>
                             {cat.name}
                           </td>
-                          <td className="px-4 py-3 text-xs text-gray-500 font-mono">
+                          <td className="px-4 py-3 text-xs" style={{ color: colors.muted }}>
                             {cat.name_en || "—"}
                           </td>
-                          <td className="px-4 py-3 text-center text-xs text-gray-600 font-bold">
+                          <td className="px-4 py-3 text-center text-xs font-bold" style={{ color: colors.textDark }}>
                             {cat.display_order}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <button
                               onClick={() => handleDeleteCategory(cat.id)}
-                              className="text-xs font-semibold"
-                              style={{ color: colors.darkPeach }}
+                              className="text-xs font-semibold px-3 py-1.5 rounded-lg"
+                              style={{ color: "#9B1D1D", background: "#FEF2F2" }}
                             >
                               Remove
                             </button>
